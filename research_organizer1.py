@@ -49,7 +49,6 @@ def infer_cluster_domains(paper_keywords, labels):
         cluster_domains[cluster] = main_domain
     return cluster_domains
 
-# Create JSON structured data for network visualization
 def create_network_json(titles, keywords, similarity_matrix, labels, cluster_domains, threshold=0.5):
     elements = {"nodes": [], "edges": []}
     node_id_map = {}
@@ -58,11 +57,11 @@ def create_network_json(titles, keywords, similarity_matrix, labels, cluster_dom
     for cluster_id, domain in cluster_domains.items():
         elements["nodes"].append({
             "data": {
-                "id": f"cluster-{cluster_id}",
+                "id": str(f"cluster-{cluster_id}"),  # Use a string for cluster IDs
                 "label": "CLUSTER",
                 "name": domain,
                 "keywords": domain,
-                "cluster": cluster_id,
+                "cluster": int(cluster_id)  # Convert to Python int
             }
         })
 
@@ -70,22 +69,22 @@ def create_network_json(titles, keywords, similarity_matrix, labels, cluster_dom
     for i, (title, keyword_list) in enumerate(zip(titles, keywords)):
         elements["nodes"].append({
             "data": {
-                "id": int(i + 1),
+                "id": str(int(i + 1)),  # Convert to string for compatibility
                 "label": "PAPER",
                 "name": title,
                 "keywords": ", ".join(keyword_list),
-                "cluster": labels[i],
+                "cluster": int(labels[i])  # Convert to Python int
             }
         })
-        node_id_map[title] = int(i + 1)
+        node_id_map[title] = str(int(i + 1))  # Store IDs as strings
 
         # Add an edge to the main cluster
         elements["edges"].append({
             "data": {
                 "id": f"edge-cluster-{i + 1}",
                 "label": "BELONGS_TO",
-                "source": int(i + 1),
-                "target": f"cluster-{labels[i]}",
+                "source": str(int(i + 1)),  # Convert source ID to string
+                "target": str(f"cluster-{labels[i]}"),  # Convert target ID to string
             }
         })
 
@@ -96,8 +95,8 @@ def create_network_json(titles, keywords, similarity_matrix, labels, cluster_dom
                     "data": {
                         "id": f"edge-cross-cluster-{i + 1}-{other_cluster_id}",
                         "label": "CROSS_DOMAIN",
-                        "source": int(i + 1),
-                        "target": f"cluster-{other_cluster_id}",
+                        "source": str(int(i + 1)),  # Convert source ID to string
+                        "target": str(f"cluster-{other_cluster_id}"),  # Convert target ID to string
                     }
                 })
 
@@ -112,12 +111,13 @@ def create_network_json(titles, keywords, similarity_matrix, labels, cluster_dom
                         "label": "SIMILARITY",
                         "source": node_id_map[titles[i]],
                         "target": node_id_map[titles[j]],
-                        "weight": float(similarity_matrix[i][j]),
+                        "weight": float(similarity_matrix[i][j])  # Convert to Python float
                     }
                 })
                 edge_id += 1
 
     return elements
+
 
 # Streamlit App
 def main():
