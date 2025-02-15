@@ -126,7 +126,7 @@ def main():
 
     uploaded_files = st.file_uploader("Upload PDF files", accept_multiple_files=True, type=["pdf"])
 
-    if uploaded_files:
+    if uploaded_files:                                                                                     
         paper_texts = []
         paper_titles = []
         paper_keywords = []
